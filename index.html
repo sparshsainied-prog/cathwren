@@ -115,6 +115,11 @@ footer p { margin: 0; }
   .about img { max-width: 13rem; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+.cover.mo { position: relative; overflow: hidden; max-width: 488px; }
+.cover.mo img { display: block; width: 100%; height: auto; }
+.cover.mo .zm { transform-origin: 7% 55%; will-change: transform; }
+.cover.mo .fg { position: absolute; overflow: hidden; }
+.cover.mo .fg img { height: 100%; will-change: transform; }
 </style>
 </head>
 <body>
@@ -135,7 +140,7 @@ footer p { margin: 0; }
       <p class="from">Picture books written and illustrated by Cath Wren</p>
     </div>
     <div class="inside">
-      <img class="cover" src="img/cover-pb.jpg" alt="Pangolin Blues by Cath Wren: a pangolin plays guitar in a moonlit forest while a bat and a parrot listen" width="488" height="640">
+      <div class="cover mo" role="img" aria-label="Pangolin Blues by Cath Wren: a pangolin plays guitar in a moonlit forest while a bat and a parrot listen"><div class="zm"><img src="img/pb-plate.jpg" alt="" width="488" height="640"><div class="fg" style="left:0;top:49.69%;width:11.68%;height:10.31%"><img src="img/frog.webp" alt=""></div></div></div>
       <div class="copy">
         <h1>Pangolin Blues</h1>
         <p class="tag">A conservation book for children aged 4 and up.</p>
@@ -199,7 +204,14 @@ footer p { margin: 0; }
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function cl(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function ease(x) { return 1 - Math.pow(1 - x, 3); }
-  function draw(p) {
+    var zm = document.querySelector('.cover .zm'), fr = document.querySelector('.cover .fg img'), cv = document.querySelector('.cover');
+  function moment(p) {
+    var z0 = Math.max(1, Math.min(2.6, 488 / cv.offsetWidth)), z = cl((p - .3) / .45); z = z * z * (3 - 2 * z);
+    zm.style.transform = 'scale(' + (z0 - (z0 - 1) * z).toFixed(4) + ')';
+    var t = cl((p - .1) / .26), e = t * t * (3 - 2 * t), b = Math.sin(cl((p - .36) / .12) * Math.PI) * .12;
+    fr.style.transform = 'translate3d(' + ((1 - e + b) * 100).toFixed(1) + '%,0,0)';
+  }
+  function draw(p) { moment(p);
     bg.style.transform = 'scale(' + (1 + .14 * p).toFixed(4) + ')';
     var o = cl(1 - p / .32);
     open.style.opacity = o.toFixed(3); open.style.transform = 'translate3d(0,' + (-p * 90).toFixed(1) + 'px,0)';
@@ -209,7 +221,7 @@ footer p { margin: 0; }
     var q = ease(cl((p - .5) / .3));
     copy.style.opacity = q.toFixed(3); copy.style.transform = 'translate3d(0,' + ((1 - q) * 28).toFixed(1) + 'px,0)';
   }
-  if (reduce) { document.documentElement.classList.remove('js'); hero.style.height = 'auto'; open.style.display = 'none'; return; }
+  if (reduce) { document.documentElement.classList.remove('js'); hero.style.height = 'auto'; open.style.display = 'none'; moment(1); return; }
   var ticking = false;
   function onScroll() {
     if (ticking) return; ticking = true;
